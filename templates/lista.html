@@ -1,0 +1,25 @@
+{%extends "template.html"%}
+{% block conteudo%}
+
+        <table class="table table-striped table-responsive table-borded">
+            <caption class="p-1 mb-2 bg-light text-black">Lista de filamentos disponíveis</caption>
+            <thead class="table-dark">
+                <tr class="text-center">
+                    <th class="fs-2">Cor</th>
+                    <th class="fs-2">Fornecedor</th>
+                    <th class="fs-2">Descrição</th>
+                    <th class="fs-2">Quantidade (g)</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% for filamento in filamentos %}
+                <tr>
+                    <td >{{filamento.cor}}</td>
+                    <td>{{filamento.fornecedor}}</td>
+                    <td>{{filamento.descricao}}</td>
+                    <td>{{filamento.qtd}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+{% endblock %}
