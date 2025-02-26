@@ -1,76 +1,77 @@
 from flask import Flask, render_template, request, redirect, session, flash, url_for
 
-class Filamento:
-    def __init__(self, cor, fornecedor, descricao, qtd):
-        self.cor = cor
-        self.fornecedor = fornecedor
-        self.descricao = descricao      
-        self.qtd = qtd 
 
-filamento1 = Filamento('Vermelho','Volt','Vermelho','1000')
-filamento2 = Filamento('Azul piscina','National','Azul tiffany','500')
-filamento3 = Filamento('Branco','National','Branco gelo','300')
-lista = [filamento1 ,filamento2 ,filamento3]       
+class Filament:
+    def __init__(self, color, supplier, description, amount):
+        self.color = color
+        self.supplier = supplier
+        self.description = description
+        self.amount = amount
+
+Filament1 = Filament('Vermelho','Volt','Vermelho','1000')
+Filament2 = Filament('Azul piscina','National','Azul tiffany','500')
+Filament3 = Filament('Branco','National','Branco gelo','300')
+list = [Filament1 ,Filament2 ,Filament3]
  
-class Usuario:
-    def __init__ (self, nome, nickname, senha):
-        self.nome = nome
+class User:
+    def __init__ (self, name, nickname, password):
+        self.name = name
         self.nickname = nickname
-        self.senha = senha
-       
-usuario1 = Usuario('Luiza', 'Lu', '1234')
-usuario2 = Usuario('Leone', 'Leo', '1235')
-usuario3 = Usuario('Laura', 'Laurita', '1236')
+        self.password = password
 
-usuarios = { usuario1.nickname :usuario1, 
-                usuario2.nickname :usuario2,
-                usuario3.nickname :usuario3 }
+list_users = [
+    User('Luiza', 'Lu', '1234'),
+    User('Leone', 'Leo', '1235'),
+    User('Laura', 'Laurita', '1236')]
+
+users = {user.nickname: user for user in list_users}
 
 app = Flask(__name__)
 app.secret_key = 'alura'
 
 @app.route('/')
 def index():
-    return render_template('lista.html',titulo='Filamentos Empresa 3D Silveira', filamentos=lista)
+    return render_template('lista.html',title='Filaments 3D Silveira', Filaments=list)
 
-@app.route('/novo')
-def novo():
-    if 'usuario_logado' not in session or session['usuario_logado'] == None:
-        return redirect(url_for('login', proxima = url_for('novo')))
-    return render_template('cadastro.html',titulo='Cadastro de Filamento')
+@app.route('/new')
+def new():
+    if 'user_logged_in' not in session or session['user_logged_in'] == None:
+        return redirect(url_for('login', following = url_for('new')))
+    return render_template('cadastro.html',title='Filament registration')
 
-@app.route('/criar', methods=['POST',])
-def criar():
-    cor = request.form['cor']
-    fornecedor = request.form['fornecedor']
-    descricao = request.form['descricao']
-    qtd = request.form['quatidade']
-    filamento4 = Filamento(cor,fornecedor,descricao,qtd)
-    lista.append(filamento4)
+@app.route('/create', methods=['POST',])
+def create():
+    color = request.form['color']
+    supplier = request.form['supplier']
+    description = request.form['description']
+    amount = request.form['amount']
+    Filament4 = Filament(color,supplier,description,amount)
+    list.append(Filament4)
     return redirect(url_for('index'))
 
 @app.route('/login')
 def login():
-    proxima = request.args.get('proxima')
-    return render_template('login.html',proxima=proxima)
+    following = request.args.get('following')
+    return render_template('login.html',following=following)
 
-@app.route('/autenticar', methods=['POST', ])
-def autenticar():
-    if request.form['usuario'] in usuarios:
-        usuario = usuarios [request.form['usuario']]
-        if request.form['senha'] == usuario.senha:
-            session['usuario_logado'] = usuario.nickname
-            flash(usuario.nickname + ' logado com sucesso ')
-            return redirect(url_for('novo'))
-            
-    else:
-        flash('Usuario não logado')
-        return redirect(url_for('login'))
+@app.route('/authenticate', methods=['POST', ])
+def authenticate():
+    user_input = request.form['user']
+    password_input = request.form['password']
+
+    if user_input in users:
+        user = users[user_input]
+        if password_input == user.password:
+            session['user_logged_in'] = user.nickname
+            flash(user.nickname + ' logged in')
+            return redirect(url_for('new'))
+    flash('User not logged in')
+    return redirect(url_for('login'))
 
 @app.route('/logout')
 def logout():
-    session['usuario_logado'] = None
-    flash('Logout efetuado com sucesso')
+    session['user_logged_in'] = None
+    flash('Logout ok')
     return redirect(url_for('index'))
-    
+
 app.run(debug=True, port=5002)
